@@ -1,0 +1,37 @@
+modLoader="javafml"
+loaderVersion="[43,)"
+license="MIT"
+issueTrackerURL = "https://github.com/PlatypusOfHats/Sinew/issues"
+
+[[mods]]
+    modId = "sinew"
+    version = "0.0.0"
+    logoFile = "logo.png"
+    itemIcon = "minecraft:string"
+    configBackground = "minecraft:textures/block/white_wool.png"
+    authors = "Unusual Modding"
+    credits = "Scouter456, platypushasnohat, Peeko32213"
+    displayURL = "https://github.com/PlatypusOfHats/Sinew"
+    displayName = "Sinew"
+    description = '''A library to hold shared code across all Unusual mods.'''
+
+[[dependencies.sinew]]
+    modId = "minecraft"
+    mandatory = true
+    versionRange = "[1.20.1,1.20.2)"
+    ordering = "NONE"
+    side = "BOTH"
+
+[[dependencies.sinew]]
+    modId = "forge"
+    mandatory = true
+    versionRange = "[47.1.3,)"
+    ordering = "NONE"
+    side = "BOTH"
+
+[[dependencies.sinew]]
+    modId = "geckolib"
+    mandatory = true
+    versionRange="[4.2,)"
+    ordering = "NONE"
+    side = "BOTH"
