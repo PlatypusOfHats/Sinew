@@ -1,5 +1,6 @@
 package com.unusualmodding.sinew;
 
+import com.unusualmodding.sinew.message.SMessages;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -23,6 +24,8 @@ public class Sinew {
     }
 
     public void commonSetup(final FMLCommonSetupEvent event) {
+
+        SMessages.register();
     }
 
     public static ResourceLocation prefix(String name) {
