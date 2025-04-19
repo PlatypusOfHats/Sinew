@@ -74,6 +74,6 @@ public class WorldFlagData extends ClientAccessibleSavedData<WorldFlagData> {
      * @return The instance of this SavedData for that level.
      */
     public static WorldFlagData get(Level level) {
-        return ClientAccessibleSavedData.get(level, WorldFlagData::new, WorldFlagData::new, ID.toString());
+        return ClientAccessibleSavedData.get(level, WorldFlagData::new, WorldFlagData::new, ID);
     }
 }
