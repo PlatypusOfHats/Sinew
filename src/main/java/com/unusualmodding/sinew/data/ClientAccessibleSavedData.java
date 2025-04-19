@@ -1,5 +1,6 @@
 package com.unusualmodding.sinew.data;
 
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.unusualmodding.sinew.message.SMessages;
 import com.unusualmodding.sinew.message.SyncSavedDataS2CPacket;
@@ -7,18 +8,15 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.saveddata.SavedData;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import com.mojang.logging.LogUtils;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.DimensionDataStorage;
 import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 

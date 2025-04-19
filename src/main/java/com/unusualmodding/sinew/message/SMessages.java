@@ -1,7 +1,5 @@
 package com.unusualmodding.sinew.message;
 
-import com.peeko32213.unusualprehistory.UnusualPrehistory;
-import com.peeko32213.unusualprehistory.common.message.*;
 import com.unusualmodding.sinew.Sinew;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
