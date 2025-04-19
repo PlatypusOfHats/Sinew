@@ -3,6 +3,7 @@ package com.unusualmodding.sinew.data;
 import com.mojang.serialization.Codec;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -34,7 +35,7 @@ public abstract class SimpleSavedData<T extends SimpleSavedData<T>> extends Save
      */
     protected SimpleSavedData(CompoundTag tag) {
         getCodec().parse(NbtOps.INSTANCE, tag.get("data"))
-                .resultOrPartial(msg -> LOGGER.error("[SavedData] Error parsing data: {}", msg))
+                .resultOrPartial(msg -> LOGGER.error("[SimpleSavedData] Error parsing data: {}", msg))
                 .ifPresent(decoded -> copyFrom((T) decoded));
     }
 
@@ -53,9 +54,15 @@ public abstract class SimpleSavedData<T extends SimpleSavedData<T>> extends Save
 
     @Override
     public CompoundTag save(CompoundTag tag) {
-        getCodec().encodeStart(NbtOps.INSTANCE, (T) this)
+        Tag dataTag = getCodec().encodeStart(NbtOps.INSTANCE, (T) this)
                 .resultOrPartial(msg -> LOGGER.error("[SavedData] Error saving data: {}", msg))
-                .ifPresent(result -> tag.put("data", result));
+                .orElse(new CompoundTag());
+
+        if (dataTag instanceof CompoundTag compound && !compound.isEmpty()) {
+            tag.put("data", compound);
+            LOGGER.debug("Saving data: {}", compound); // for debugging
+        }
+
         return tag;
     }
 

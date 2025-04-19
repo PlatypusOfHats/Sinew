@@ -24,7 +24,6 @@ public class Sinew {
     }
 
     public void commonSetup(final FMLCommonSetupEvent event) {
-
         SMessages.register();
     }
 

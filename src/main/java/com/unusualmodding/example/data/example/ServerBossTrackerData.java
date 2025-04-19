@@ -1,4 +1,4 @@
-package com.unusualmodding.sinew.data.example;
+package com.unusualmodding.example.data.example;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

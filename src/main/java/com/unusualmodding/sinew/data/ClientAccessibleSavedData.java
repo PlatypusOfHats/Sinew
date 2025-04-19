@@ -38,6 +38,9 @@ public abstract class ClientAccessibleSavedData<T extends ClientAccessibleSavedD
     private static final Logger LOGGER = LogUtils.getLogger();
 
     private static final Map<ResourceLocation, ClientAccessibleSavedData<?>> clientCache = new HashMap<>();
+    private static final Map<ResourceLocation, CompoundTag> pendingSyncs = new HashMap<>();
+
+
     private static ClientLevel cachedClientLevel = null;
     /** The ID used for saving/syncing (set automatically in get()) */
     protected  ResourceLocation id;
@@ -101,6 +104,7 @@ public abstract class ClientAccessibleSavedData<T extends ClientAccessibleSavedD
      */
     @Override
     public CompoundTag save(CompoundTag tag) {
+
         getCodec().encodeStart(NbtOps.INSTANCE, (T) this)
                 .resultOrPartial(msg -> LOGGER.error("[SavedData] Error saving data: {}", msg))
                 .ifPresent(result -> tag.put("data", result));
@@ -131,13 +135,23 @@ public abstract class ClientAccessibleSavedData<T extends ClientAccessibleSavedD
                 cachedClientLevel = (ClientLevel) level;
                 clientCache.clear();
             }
+
             data = (T) clientCache.computeIfAbsent(id, k -> createFunc.get());
+
+            CompoundTag pending = pendingSyncs.remove(id);
+            if (pending != null) {
+                LOGGER.info("Applying deferred sync for {}", id);
+                data.getCodec().parse(NbtOps.INSTANCE, pending.get("data"))
+                        .resultOrPartial(msg -> LOGGER.error("Error applying deferred sync for {}: {}", id, msg))
+                        .ifPresent(decoded -> data.copyFrom((T) decoded));
+            }
         }
 
         data.id = id;
         data.level = level;
         return data;
     }
+
 
     /**
      * Applies a synchronization payload sent from the server by deserializing the tag using the appropriate {@link Codec}
@@ -148,15 +162,28 @@ public abstract class ClientAccessibleSavedData<T extends ClientAccessibleSavedD
      */
     @ApiStatus.Internal
     public static void applySync(ResourceLocation id, CompoundTag tag) {
-        if (cachedClientLevel != null) {
-            ClientAccessibleSavedData<?> data = clientCache.get(id);
-            if (data != null) {
-                data.getCodec().parse(NbtOps.INSTANCE, tag.get("data"))
-                        .resultOrPartial(msg -> LOGGER.error("Error syncing {}: {}", id, msg))
-                        .ifPresent(decoded -> ((ClientAccessibleSavedData) data).copyFrom(decoded));
-            }
+        // Cache the data for later if no level or data instance yet
+        if (cachedClientLevel == null || !clientCache.containsKey(id)) {
+            LOGGER.warn("Queuing sync for {} (client level or data not ready)", id);
+            pendingSyncs.put(id, tag);
+            return;
+        }
+
+        ClientAccessibleSavedData<?> data = clientCache.get(id);
+        if (data != null) {
+            data.getCodec().parse(NbtOps.INSTANCE, tag.get("data"))
+                    .resultOrPartial(msg -> LOGGER.error("Error syncing {}: {}", id, msg))
+                    .ifPresent(decoded -> ((ClientAccessibleSavedData) data).copyFrom(decoded));
         }
     }
+
+    public static void clearClientCache() {
+        cachedClientLevel = null;
+        clientCache.clear();
+        pendingSyncs.clear();
+        LOGGER.info("Cleared client-side saved data cache and pending syncs");
+    }
+
 }
 
 

@@ -66,6 +66,7 @@ public class SyncSavedDataS2CPacket {
             if (level != null) {
                 ClientAccessibleSavedData.applySync(id, data);
             }
+            context.setPacketHandled(true);
         });
         return true;
     }

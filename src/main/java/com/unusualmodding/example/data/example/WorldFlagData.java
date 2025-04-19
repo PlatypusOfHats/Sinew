@@ -1,7 +1,8 @@
-package com.unusualmodding.sinew.data.example;
+package com.unusualmodding.example.data.example;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.unusualmodding.sinew.Sinew;
 import com.unusualmodding.sinew.data.ClientAccessibleSavedData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -17,19 +18,20 @@ import net.minecraft.world.level.Level;
  */
 public class WorldFlagData extends ClientAccessibleSavedData<WorldFlagData> {
     /** Unique identifier for this SavedData. Used in get(...) and sync packets. */
-    public static final ResourceLocation ID = new ResourceLocation("yourmodid", "world_flag_data");
+    public static final ResourceLocation ID = new ResourceLocation(Sinew.MODID, "world_flag_data");
 
     /**
      * The Codec used to serialize and deserialize this class.
      * This controls how data is written to NBT or synced to the client.
      */
     public static final Codec<WorldFlagData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.BOOL.optionalFieldOf("flag", false).forGetter(data -> data.flag)
+            Codec.BOOL.fieldOf("flag").forGetter(data -> data.flag),
+            Codec.INT.fieldOf("int").forGetter(data -> data.value)
     ).apply(instance, WorldFlagData::new));
 
     /** The boolean flag being stored. This is synced and saved. */
     public boolean flag = false;
-
+    public int value;
     /**
      * Empty constructor for creating a new instance (server or client cache).
      */
@@ -40,8 +42,9 @@ public class WorldFlagData extends ClientAccessibleSavedData<WorldFlagData> {
      *
      * @param b The flag value.
      */
-    public WorldFlagData(boolean b) {
+    public WorldFlagData(boolean b, int value) {
         this.flag = b;
+        this.value = value;
     }
 
     /**
@@ -61,6 +64,7 @@ public class WorldFlagData extends ClientAccessibleSavedData<WorldFlagData> {
     @Override
     protected void copyFrom(WorldFlagData other) {
         this.flag = other.flag;
+        this.value = other.value;
     }
 
     /**
