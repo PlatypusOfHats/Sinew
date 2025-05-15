@@ -93,6 +93,7 @@ public abstract class ClientAccessibleSavedData<T extends ClientAccessibleSavedD
             this.save(tag);
             SMessages.sendToClients(new SyncSavedDataS2CPacket(id, tag));
         }
+        super.setDirty();
     }
 
 
